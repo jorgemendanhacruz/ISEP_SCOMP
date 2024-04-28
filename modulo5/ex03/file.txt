@@ -1,0 +1,10 @@
+I am child 1.
+I am the process with PID 9398.
+I am child 2.
+I am the process with PID 9399.
+I am child 3.
+I am the process with PID 9400.
+I am child 4.
+I am the process with PID 9401.
+I am child 5.
+I am the process with PID 9402.

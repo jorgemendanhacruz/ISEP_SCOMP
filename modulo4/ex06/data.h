@@ -3,9 +3,8 @@
 
 typedef struct{
     char phrase[100]; 
-    int current_char;
+    int *childs;
     int new_data;
-    int childs[];
 }data;
 
 #define SHM_NAME "/shmex06"
