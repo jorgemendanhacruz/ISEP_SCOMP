@@ -16,10 +16,10 @@
 #include <string.h>
 #include "data.h"
 
-#define NUMBER_OF_CHILDS 10
+#define NUMBER_OF_CHILDS 1
 #define SEM_NOME_MAX_TAM 100
 
-#define SEM_NAME_BASE "/mod5_ex02_sem"
+#define SEM_NAME_BASE "/mod5_ex05_sem"
 
 // Create shared memory
 //  shm_open() ➔ ftruncate() ➔ mmap()
@@ -63,7 +63,7 @@ int createChild(int n)
 int main()
 {
     /*Creating shared memory*/
-    const int DATA_SIZE = sizeof(data);
+    /*const int DATA_SIZE = sizeof(data);
     int fd = shm_open(SHM_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd == -1)
     {
@@ -73,24 +73,15 @@ int main()
     ftruncate(fd, DATA_SIZE);
     data *data_1 = (data *)mmap(NULL, sizeof(int),
                                 PROT_READ | PROT_WRITE,
-                                MAP_SHARED, fd, 0);
+                                MAP_SHARED, fd, 0);*/
 
     /********************************************************************************************************************/
     /*Creating semaphores*/
     enum index
     {
-        SEM_1,
-        SEM_2,
-        SEM_3,
-        SEM_4,
-        SEM_5,
-        SEM_6,
-        SEM_7,
-        SEM_8,
-        SEM_9,
-        SEM_10
+        SEM_1
     };
-    int sems_init_values[10] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int sems_init_values[1] = {0};
     const int QTD_SEMS = sizeof(sems_init_values) / sizeof(sems_init_values[0]);
     char sems_names[QTD_SEMS][SEM_NOME_MAX_TAM];
     memset(sems_names, 0, sizeof(sems_names));
@@ -107,10 +98,6 @@ int main()
         }
     }
 
-    struct timespec timeout;
-    timeout.tv_sec = time(0) + 10; // Current time + 10 seconds
-    timeout.tv_nsec = 0;
-
     /********************************************************************************************************************/
     /*Creating child processes*/
 
@@ -121,55 +108,15 @@ int main()
 
     if (id != 0)
     {
-        if (sem_timedwait(sems[id - 1], &timeout) == -1)
-        {
-            perror("10 seconds threshold exceeded");
-            exit(EXIT_FAILURE);
-        }
-
-        if (data_1->line_counter > 10)
-        {
-            printf("Maximum of 10 lines exceeded.\n");
-        }
-
-        FILE *fptr = fopen("file.txt", "a");
-
-        // Write some text to the file
-        int i;
-
-        fprintf(fptr, "I am the process with PID %d.\n", getpid());
-        data_1->line_counter++;
-
-        sleep(2);
-
-        // Close the file
-        fclose(fptr);
-
-        if (id != NUMBER_OF_CHILDS)
-        {
-            sem_post(sems[id]);
-        }
-
+        sem_wait(sems[SEM_1]);
+        printf("I am the child\n");
         exit(EXIT_SUCCESS);
     }
 
-    for (i = 0; i < NUMBER_OF_CHILDS; i++)
-    {
-        wait(NULL);
-    }
-
-    printf("\n");
-    printf("Father process code\n");
-    printf("Print file\n");
-
-    FILE *fptr = fopen("file.txt", "r");
-
-    int ch;
-    while ((ch = fgetc(fptr)) != EOF)
-    {
-        putchar(ch);
-    }
-
+    printf("I am the parent\n");
+    sem_post(sems[SEM_1]);
+    
+    /*Close and unlink*/
     for (i = 0; i < QTD_SEMS; i++)
     {
         if (sem_close(sems[i]) == -1)
@@ -188,10 +135,10 @@ int main()
         }
     }
 
-    if (shm_unlink(SHM_NAME) == -1)
+    /*if (shm_unlink(SHM_NAME) == -1)
     {
         perror("shm unlink failed");
         exit(EXIT_FAILURE);
-    }
+    }*/
     return 0;
 }

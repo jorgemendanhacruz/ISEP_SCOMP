@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <semaphore.h>
 
-#define NUMBER_OF_CHILDS 5
+#define NUMBER_OF_CHILDS 1
 #define SHM_NAME "/mod5_ex01"
 #define SEM_NAME "/mod5_ex01_sem"
 
