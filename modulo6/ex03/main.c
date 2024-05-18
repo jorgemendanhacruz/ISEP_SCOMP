@@ -8,6 +8,7 @@ void *printData(void *arg)
 {
     data value = *((data *)arg);
 
+    printf("I am thread %lu\n", pthread_self());
     printf("number: %d\n", value.number);
     printf("name: %s\n", value.name);
     printf("grade: %d\n", value.grade);
@@ -16,39 +17,27 @@ void *printData(void *arg)
     pthread_exit((void *)NULL);
 }
 
+void initialize_arr(data *arg)
+{
+    int i;
+    char *arr_names[] = {"João", "Ana", "Joaquim", "Paulo", "José"};
+    int arr_grades[] = {10, 12, 14, 16, 18};
+
+    for (i = 0; i < QTD_THREADS; i++)
+    {
+        data data_to_fill;
+        data_to_fill.grade = arr_grades[i];
+        data_to_fill.name = arr_names[i];
+        data_to_fill.number = i + 1;
+        arg[i] = data_to_fill;
+    }
+}
+
 int main()
 {
     data data_arr[QTD_THREADS];
 
-    data data1;
-    data1.number = 1;
-    data1.name = "João";
-    data1.grade = 10;
-    data_arr[0] = data1;
-
-    data data2;
-    data1.number = 2;
-    data1.name = "Ana";
-    data1.grade = 10;
-    data_arr[1] = data1;
-
-    data data3;
-    data1.number = 3;
-    data1.name = "Joaquim";
-    data1.grade = 10;
-    data_arr[2] = data1;
-
-    data data4;
-    data1.number = 4;
-    data1.name = "Paulo";
-    data1.grade = 10;
-    data_arr[3] = data1;
-
-    data data5;
-    data1.number = 5;
-    data1.name = "José";
-    data1.grade = 10;
-    data_arr[4] = data1;
+    initialize_arr(data_arr);
 
     pthread_t threads[QTD_THREADS] = {0};
 
@@ -56,8 +45,13 @@ int main()
     for (i = 0; i < QTD_THREADS; i++)
     {
         pthread_create(&threads[i], NULL, printData, (void *)&data_arr[i]);
+    }
+
+    for (i = 0; i < QTD_THREADS; i++)
+    {
         pthread_join(threads[i], NULL);
     }
+
 
     return 0;
 }
